@@ -14,13 +14,22 @@ const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const specialCharsRegex = /[!@#$%^&*()_\-+=,.?/]/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])([^\s]){8,}$/;
 
+const MSG_REQUIRED = "Bắt buộc nhập.";
+const MSG_USERNAME_SPECIAL_CHARS = "Không nhập các ký tự đặc biệt: !@#$%^&*()_-+=,.?/";
+const MSG_EMAIL_INVALID = "Nhập đúng định dạng email.";
+const MSG_PASSWORD_INVALID = "Mật khẩu phải tối thiểu 8 ký tự, có ít nhất 1 chữ viết hoa, chữ thường, số, ký tự đặc biệt và không chứa khoảng trắng";
+const MSG_CONFIRM_PASSWORD_MISMATCH = "Mật khẩu không khớp.";
+const MSG_REGISTER_SUCCESS = "Đăng ký thành công";
+const MSG_ALERT_WARNING = "Cảnh báo"; 
+
 function validateUsername() {
     let valid = true;
-    if (!username.value) {
-        usernameError.textContent = "Bắt buộc nhập.";
+    const usernameValue = username.value.trim();
+    if (!usernameValue) {
+        usernameError.textContent = MSG_REQUIRED; 
         valid = false;
-    } else if (specialCharsRegex.test(username.value)) {
-        usernameError.textContent = "Không nhập các ký tự đặc biệt: !@#$%^&*()_-+=,.?/";
+    } else if (specialCharsRegex.test(usernameValue)) {
+        usernameError.textContent = MSG_USERNAME_SPECIAL_CHARS; 
         valid = false;
     } else {
         usernameError.textContent = "";
@@ -30,11 +39,12 @@ function validateUsername() {
 
 function validateEmail() {
     let valid = true;
-    if (!email.value) {
-        emailError.textContent = "Bắt buộc nhập.";
+    const emailValue = email.value.trim();
+    if (!emailValue) {
+        emailError.textContent = MSG_REQUIRED; 
         valid = false;
-    } else if (!emailRegex.test(email.value)) {
-        emailError.textContent = "Nhập đúng định dạng email.";
+    } else if (!emailRegex.test(emailValue)) {
+        emailError.textContent = MSG_EMAIL_INVALID;
         valid = false;
     } else {
         emailError.textContent = "";
@@ -44,11 +54,12 @@ function validateEmail() {
 
 function validatePassword() {
     let valid = true;
-    if (!password.value) {
-        passwordError.textContent = "Bắt buộc nhập.";
+    const passwordValue = password.value.trim();
+    if (!passwordValue) {
+        passwordError.textContent = MSG_REQUIRED; 
         valid = false;
-    } else if (!passwordRegex.test(password.value)) {
-        passwordError.textContent = "Mật khẩu phải tối thiểu 8 ký tự, có ít nhất 1 chữ viết hoa, chữ thường, số, ký tự đặc biệt và không chứa khoảng trắng";
+    } else if (!passwordRegex.test(passwordValue)) {
+        passwordError.textContent = MSG_PASSWORD_INVALID; 
         valid = false;
     } else {
         passwordError.textContent = "";
@@ -58,11 +69,13 @@ function validatePassword() {
 
 function validateConfirmPassword() {
     let valid = true;
-    if (!confirmPassword.value) { 
-        confirmPasswordError.textContent = "Bắt buộc nhập.";
+    const confirmPasswordValue = confirmPassword.value.trim();
+    const passwordValue = password.value.trim();
+    if (!confirmPasswordValue) {
+        confirmPasswordError.textContent = MSG_REQUIRED; 
         valid = false;
-    } else if (confirmPassword.value !== password.value) { 
-        confirmPasswordError.textContent = "Mật khẩu không khớp.";
+    } else if (confirmPasswordValue !== passwordValue) {
+        confirmPasswordError.textContent = MSG_CONFIRM_PASSWORD_MISMATCH; 
         valid = false;
     } else {
         confirmPasswordError.textContent = "";
@@ -74,30 +87,30 @@ function validateForm() {
     const isUsernameValid = validateUsername();
     const isEmailValid = validateEmail();
     const isPasswordValid = validatePassword();
-    const isConfirmPasswordValid = validateConfirmPassword(); 
+    const isConfirmPasswordValid = validateConfirmPassword();
     return isUsernameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid;
 }
 
 form.addEventListener("submit", function (e) {
-    e.preventDefault(); 
+    e.preventDefault();
 
-    if (validateForm()) { 
+    if (validateForm()) {
         const userData = {
-            username: username.value,
-            email: email.value,
-            password: password.value,
+            username: username.value.trim(),
+            email: email.value.trim(),
+            password: password.value.trim(),
         };
         let users = JSON.parse(localStorage.getItem("registeredUsersArr")) || [];
         users.push(userData);
         localStorage.setItem("registeredUsersArr", JSON.stringify(users));
-        alert("Đăng ký thành công");
+        alert(MSG_REGISTER_SUCCESS); 
         form.reset();
         usernameError.textContent = "";
         emailError.textContent = "";
         passwordError.textContent = "";
         confirmPasswordError.textContent = "";
     } else {
-        alert("Cảnh báo");
+        alert(MSG_ALERT_WARNING); 
     }
 });
 
