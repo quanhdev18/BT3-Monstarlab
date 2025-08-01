@@ -14,22 +14,28 @@ const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 const specialCharsRegex = /[!@#$%^&*()_\-+=,.?/]/;
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])([^\s]){8,}$/;
 
-const MSG_REQUIRED = "Bắt buộc nhập.";
-const MSG_USERNAME_SPECIAL_CHARS = "Không nhập các ký tự đặc biệt: !@#$%^&*()_-+=,.?/";
-const MSG_EMAIL_INVALID = "Nhập đúng định dạng email.";
-const MSG_PASSWORD_INVALID = "Mật khẩu phải tối thiểu 8 ký tự, có ít nhất 1 chữ viết hoa, chữ thường, số, ký tự đặc biệt và không chứa khoảng trắng";
-const MSG_CONFIRM_PASSWORD_MISMATCH = "Mật khẩu không khớp.";
-const MSG_REGISTER_SUCCESS = "Đăng ký thành công";
-const MSG_ALERT_WARNING = "Cảnh báo"; 
+const MESSAGES = {
+    REQUIRED: "Bắt buộc nhập.",
+    USERNAME_SPECIAL_CHARS: "Không nhập các ký tự đặc biệt: !@#$%^&*()_-+=,.?/",
+    EMAIL_INVALID: "Nhập đúng định dạng email.",
+    PASSWORD_INVALID: "Mật khẩu phải tối thiểu 8 ký tự, có ít nhất 1 chữ viết hoa, chữ thường, số, ký tự đặc biệt và không chứa khoảng trắng",
+    CONFIRM_PASSWORD_MISMATCH: "Mật khẩu không khớp.",
+    REGISTER_SUCCESS: "Đăng ký thành công",
+    ALERT_WARNING: "Cảnh báo"
+};
+
+function getTrimmedValue(element) {
+    return element.value.trim();
+}
 
 function validateUsername() {
     let valid = true;
-    const usernameValue = username.value.trim();
+    const usernameValue = getTrimmedValue(username); 
     if (!usernameValue) {
-        usernameError.textContent = MSG_REQUIRED; 
+        usernameError.textContent = MESSAGES.REQUIRED;
         valid = false;
     } else if (specialCharsRegex.test(usernameValue)) {
-        usernameError.textContent = MSG_USERNAME_SPECIAL_CHARS; 
+        usernameError.textContent = MESSAGES.USERNAME_SPECIAL_CHARS;
         valid = false;
     } else {
         usernameError.textContent = "";
@@ -39,12 +45,12 @@ function validateUsername() {
 
 function validateEmail() {
     let valid = true;
-    const emailValue = email.value.trim();
+    const emailValue = getTrimmedValue(email); 
     if (!emailValue) {
-        emailError.textContent = MSG_REQUIRED; 
+        emailError.textContent = MESSAGES.REQUIRED;
         valid = false;
     } else if (!emailRegex.test(emailValue)) {
-        emailError.textContent = MSG_EMAIL_INVALID;
+        emailError.textContent = MESSAGES.EMAIL_INVALID;
         valid = false;
     } else {
         emailError.textContent = "";
@@ -54,12 +60,12 @@ function validateEmail() {
 
 function validatePassword() {
     let valid = true;
-    const passwordValue = password.value.trim();
+    const passwordValue = getTrimmedValue(password); 
     if (!passwordValue) {
-        passwordError.textContent = MSG_REQUIRED; 
+        passwordError.textContent = MESSAGES.REQUIRED;
         valid = false;
     } else if (!passwordRegex.test(passwordValue)) {
-        passwordError.textContent = MSG_PASSWORD_INVALID; 
+        passwordError.textContent = MESSAGES.PASSWORD_INVALID;
         valid = false;
     } else {
         passwordError.textContent = "";
@@ -69,13 +75,13 @@ function validatePassword() {
 
 function validateConfirmPassword() {
     let valid = true;
-    const confirmPasswordValue = confirmPassword.value.trim();
-    const passwordValue = password.value.trim();
+    const confirmPasswordValue = getTrimmedValue(confirmPassword); 
+    const passwordValue = getTrimmedValue(password); 
     if (!confirmPasswordValue) {
-        confirmPasswordError.textContent = MSG_REQUIRED; 
+        confirmPasswordError.textContent = MESSAGES.REQUIRED;
         valid = false;
     } else if (confirmPasswordValue !== passwordValue) {
-        confirmPasswordError.textContent = MSG_CONFIRM_PASSWORD_MISMATCH; 
+        confirmPasswordError.textContent = MESSAGES.CONFIRM_PASSWORD_MISMATCH;
         valid = false;
     } else {
         confirmPasswordError.textContent = "";
@@ -91,26 +97,30 @@ function validateForm() {
     return isUsernameValid && isEmailValid && isPasswordValid && isConfirmPasswordValid;
 }
 
+function resetData() {
+    form.reset();
+    usernameError.textContent = "";
+    emailError.textContent = "";
+    passwordError.textContent = "";
+    confirmPasswordError.textContent = "";
+}
+
 form.addEventListener("submit", function (e) {
     e.preventDefault();
 
     if (validateForm()) {
         const userData = {
-            username: username.value.trim(),
-            email: email.value.trim(),
-            password: password.value.trim(),
+            username: getTrimmedValue(username), 
+            email: getTrimmedValue(email),     
+            password: getTrimmedValue(password),
         };
         let users = JSON.parse(localStorage.getItem("registeredUsersArr")) || [];
         users.push(userData);
         localStorage.setItem("registeredUsersArr", JSON.stringify(users));
-        alert(MSG_REGISTER_SUCCESS); 
-        form.reset();
-        usernameError.textContent = "";
-        emailError.textContent = "";
-        passwordError.textContent = "";
-        confirmPasswordError.textContent = "";
+        alert(MESSAGES.REGISTER_SUCCESS);
+        resetData();
     } else {
-        alert(MSG_ALERT_WARNING); 
+        alert(MESSAGES.ALERT_WARNING);
     }
 });
 
